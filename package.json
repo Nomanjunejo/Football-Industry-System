@@ -1,0 +1,9 @@
+{
+  "name": "football-industry-system",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Root convenience scripts. See QUICKSTART.md. One-time: run setup.sh (or setup.bat). Every time after: run start.sh (or start.bat).",
+  "scripts": {
+    "setup:frontend": "cd frontend && npm install"
+  }
+}

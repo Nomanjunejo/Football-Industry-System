@@ -1,0 +1,44 @@
+{
+  "name": "New Export Order Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "new-export-order",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "webhook1",
+      "name": "Webhook: New Export Order",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "new-export-order"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.all()[0].json.body;\nreturn [{ json: { message: `New export order #${body.export_order_id} placed: $${body.total_amount} to ${body.destination_country} (Client #${body.client_id}).` } }];"
+      },
+      "id": "code1",
+      "name": "Format Notification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "content": "={{$json.message}}"
+      },
+      "id": "noop1",
+      "name": "Send Notification (replace with Email/Slack node)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: New Export Order": { "main": [[{ "node": "Format Notification", "type": "main", "index": 0 }]] },
+    "Format Notification": { "main": [[{ "node": "Send Notification (replace with Email/Slack node)", "type": "main", "index": 0 }]] }
+  }
+}

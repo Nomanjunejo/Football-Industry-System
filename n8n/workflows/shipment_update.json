@@ -1,0 +1,44 @@
+{
+  "name": "Shipment Update Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "shipment-update",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "webhook1",
+      "name": "Webhook: Shipment Update",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "shipment-update"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.all()[0].json.body;\nreturn [{ json: { message: `Export order #${body.export_order_id} shipment status changed to ${body.shipment_status}${body.tracking_number ? ' (tracking: ' + body.tracking_number + ')' : ''}.` } }];"
+      },
+      "id": "code1",
+      "name": "Format Notification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "content": "={{$json.message}}"
+      },
+      "id": "noop1",
+      "name": "Send Notification (replace with Email/Slack node)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Shipment Update": { "main": [[{ "node": "Format Notification", "type": "main", "index": 0 }]] },
+    "Format Notification": { "main": [[{ "node": "Send Notification (replace with Email/Slack node)", "type": "main", "index": 0 }]] }
+  }
+}

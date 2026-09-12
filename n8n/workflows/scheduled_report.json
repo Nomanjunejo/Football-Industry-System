@@ -1,0 +1,58 @@
+{
+  "name": "Scheduled Weekly Report",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "weeks", "weeksInterval": 1 }] }
+      },
+      "id": "schedule1",
+      "name": "Every Monday",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://127.0.0.1:8000/api/analytics/scheduled-report-summary",
+        "method": "GET",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-Automation-Key", "value": "change_this_shared_secret" }
+          ]
+        }
+      },
+      "id": "httpRequest1",
+      "name": "Get Weekly Report Summary",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $input.all()[0].json;\nconst lines = [\n  `Weekly Football Industry Report`,\n  `Export Orders: ${d.dashboard.total_export_orders}`,\n  `Export Revenue: $${d.dashboard.total_export_revenue}`,\n  `Top Export Country: ${d.dashboard.top_export_country || 'N/A'}`,\n  `Best Selling Product: ${d.dashboard.best_selling_product || 'N/A'}`,\n  `Low Stock Items: ${d.low_stock_items.length}`,\n];\nreturn [{ json: { message: lines.join('\\n') } }];"
+      },
+      "id": "code1",
+      "name": "Format Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "content": "={{$json.message}}"
+      },
+      "id": "noop1",
+      "name": "Send Notification (replace with Email/Slack node)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Every Monday": { "main": [[{ "node": "Get Weekly Report Summary", "type": "main", "index": 0 }]] },
+    "Get Weekly Report Summary": { "main": [[{ "node": "Format Report", "type": "main", "index": 0 }]] },
+    "Format Report": { "main": [[{ "node": "Send Notification (replace with Email/Slack node)", "type": "main", "index": 0 }]] }
+  }
+}

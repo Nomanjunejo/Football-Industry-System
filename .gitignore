@@ -1,0 +1,38 @@
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# Backend
+backend/__pycache__/
+backend/*.pyc
+
+# Environment files
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# Node
+node_modules/
+
+# Backend virtual environment
+backend/venv/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# Python
+__pycache__/
+*.pyc
+
+# Backend virtual environment
+backend/venv/
